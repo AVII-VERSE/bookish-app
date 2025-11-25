@@ -1,3 +1,4 @@
+
 export enum ScreenName {
   SPLASH = 'SPLASH',
   LANDING = 'LANDING',
@@ -21,9 +22,4 @@ export interface Book {
   reviews: number;
   description?: string;
   genre?: string;
-}
-
-export interface SaleData {
-  name: string;
-  value: number;
 }

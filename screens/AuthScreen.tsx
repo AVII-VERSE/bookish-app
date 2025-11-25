@@ -1,85 +1,95 @@
+
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenName } from '../types';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { COLORS } from '../theme';
 
 interface AuthScreenProps {
   onNavigate: (screen: ScreenName) => void;
+  isDark?: boolean;
 }
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({ onNavigate }) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({ onNavigate, isDark = true }) => {
   const [mode, setMode] = useState<'signup' | 'login'>('signup');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate login success
-    onNavigate(ScreenName.DASHBOARD);
-  };
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.backgroundDark : COLORS.backgroundLight;
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col items-center pt-10 pb-8">
-        <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-4xl text-primary">auto_stories</span>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bookish</h1>
-        </div>
-        <p className="text-slate-600 dark:text-slate-400 font-serif italic">Your Next Chapter Awaits.</p>
-      </div>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <ScrollView style={[styles.container, { backgroundColor: bgColor }]} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Icon name="auto-stories" size={40} color={COLORS.primary} />
+          <Text style={[styles.brand, { color: textColor }]}>Bookish</Text>
+          <Text style={styles.tagline}>Your Next Chapter Awaits.</Text>
+        </View>
 
-      <div className="w-full bg-slate-200 dark:bg-slate-800 p-1 rounded-lg flex mb-6">
-        <button
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'signup' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow' : 'text-slate-500 dark:text-slate-400'}`}
-            onClick={() => setMode('signup')}
-        >
-            Sign Up
-        </button>
-        <button
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'login' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow' : 'text-slate-500 dark:text-slate-400'}`}
-            onClick={() => setMode('login')}
-        >
-            Log In
-        </button>
-      </div>
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity 
+            style={[styles.toggleBtn, mode === 'signup' && { backgroundColor: isDark ? COLORS.backgroundDark : '#FFF' }]}
+            onPress={() => setMode('signup')}
+          >
+            <Text style={{ color: mode === 'signup' ? textColor : COLORS.slate500 }}>Sign Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.toggleBtn, mode === 'login' && { backgroundColor: isDark ? COLORS.backgroundDark : '#FFF' }]}
+            onPress={() => setMode('login')}
+          >
+            <Text style={{ color: mode === 'login' ? textColor : COLORS.slate500 }}>Log In</Text>
+          </TouchableOpacity>
+        </View>
 
-      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-        {mode === 'signup' && (
-            <Input label="Full Name" placeholder="Enter your full name" type="text" />
-        )}
-        <Input label="Email" placeholder="Enter your email address" type="email" />
-        <Input label="Password" placeholder="Enter your password" type="password" icon="visibility" />
-        
-        {mode === 'login' && (
-            <div className="flex justify-end">
-                <a href="#" className="text-sm text-primary font-medium hover:underline">Forgot password?</a>
-            </div>
-        )}
+        <View style={styles.form}>
+          {mode === 'signup' && (
+              <Input label="Full Name" placeholder="Enter your full name" isDark={isDark} />
+          )}
+          <Input label="Email" placeholder="Enter your email address" keyboardType="email-address" isDark={isDark} />
+          <Input label="Password" placeholder="Enter your password" secureTextEntry icon="visibility" isDark={isDark} />
+          
+          {mode === 'login' && (
+              <TouchableOpacity style={styles.forgotPass}>
+                <Text style={{ color: COLORS.primary }}>Forgot password?</Text>
+              </TouchableOpacity>
+          )}
 
-        <Button type="submit" fullWidth className="mt-4">
-            {mode === 'signup' ? 'Create Account' : 'Log In'}
-        </Button>
-      </form>
+          <Button onPress={() => onNavigate(ScreenName.DASHBOARD)} fullWidth style={{ marginTop: 16 }}>
+              {mode === 'signup' ? 'Create Account' : 'Log In'}
+          </Button>
+        </View>
 
-      <div className="relative w-full my-8 text-center">
-        <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-300 dark:border-slate-700"></div>
-        </div>
-        <span className="relative px-2 bg-background-light dark:bg-background-dark text-xs text-slate-500 dark:text-slate-400">or continue with</span>
-      </div>
+        <View style={styles.divider}>
+          <View style={[styles.line, { backgroundColor: COLORS.slate400 }]} />
+          <Text style={[styles.orText, { backgroundColor: bgColor }]}>or continue with</Text>
+        </View>
 
-      <div className="flex flex-col gap-3 w-full">
-        <button className="flex items-center justify-center gap-3 h-12 w-full rounded-lg border border-slate-300 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-            <span className="text-sm font-medium">Continue with Google</span>
-        </button>
-        <button className="flex items-center justify-center gap-3 h-12 w-full rounded-lg border border-slate-300 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <span className="material-symbols-outlined">apple</span>
-            <span className="text-sm font-medium">Continue with Apple</span>
-        </button>
-      </div>
-
-      <p className="mt-8 text-xs text-center text-slate-500 dark:text-slate-400">
-        By continuing, you agree to our <a href="#" className="text-primary hover:underline">Terms</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
-      </p>
-    </div>
+        <View style={styles.socials}>
+          <TouchableOpacity style={[styles.socialBtn, { borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+            <Text style={{ color: isDark ? '#FFF' : '#000' }}>Google</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.socialBtn, { borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+             <Text style={{ color: isDark ? '#FFF' : '#000' }}>Apple</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  content: { padding: 24, justifyContent: 'center', minHeight: '100%' },
+  header: { alignItems: 'center', marginBottom: 32 },
+  brand: { fontSize: 30, fontWeight: 'bold', marginVertical: 8 },
+  tagline: { fontSize: 16, fontStyle: 'italic', color: COLORS.slate500 },
+  toggleContainer: { flexDirection: 'row', backgroundColor: COLORS.slate200, padding: 4, borderRadius: 8, marginBottom: 24 },
+  toggleBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 6 },
+  form: { width: '100%' },
+  forgotPass: { alignSelf: 'flex-end', marginBottom: 16 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 32, position: 'relative' },
+  line: { flex: 1, height: 1 },
+  orText: { position: 'absolute', left: '35%', width: '30%', textAlign: 'center', color: COLORS.slate500 },
+  socials: { gap: 12 },
+  socialBtn: { height: 50, borderWidth: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }
+});

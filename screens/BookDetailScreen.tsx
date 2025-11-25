@@ -1,98 +1,78 @@
+
 import React from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenName } from '../types';
 import { Button } from '../components/Button';
+import { COLORS } from '../theme';
 
 interface BookDetailScreenProps {
   onNavigate: (screen: ScreenName) => void;
+  isDark?: boolean;
 }
 
-export const BookDetailScreen: React.FC<BookDetailScreenProps> = ({ onNavigate }) => {
+export const BookDetailScreen: React.FC<BookDetailScreenProps> = ({ onNavigate, isDark = true }) => {
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.backgroundDark : COLORS.backgroundLight;
+
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark pb-8 animate-in slide-in-from-right duration-300">
-      
-      {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
-        <button onClick={() => onNavigate(ScreenName.MARKETPLACE)} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10">
-          <span className="material-symbols-outlined text-slate-900 dark:text-white">arrow_back</span>
-        </button>
-        <h1 className="text-lg font-bold text-slate-900 dark:text-white">Book Details</h1>
-        <div className="flex gap-2">
-          <button className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10">
-            <span className="material-symbols-outlined text-slate-900 dark:text-white">bookmark_border</span>
-          </button>
-          <button className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10">
-            <span className="material-symbols-outlined text-slate-900 dark:text-white">share</span>
-          </button>
-        </div>
-      </header>
+    <View style={{ flex: 1, backgroundColor: bgColor }}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => onNavigate(ScreenName.MARKETPLACE)}>
+          <Icon name="arrow-back" size={24} color={textColor} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: textColor }]}>Book Details</Text>
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <Icon name="bookmark-border" size={24} color={textColor} />
+          <Icon name="share" size={24} color={textColor} />
+        </View>
+      </View>
 
-      {/* Cover Image */}
-      <div className="px-6 py-4 flex justify-center">
-        <div 
-          className="w-full max-w-xs aspect-[3/4] bg-cover bg-center rounded-xl shadow-2xl relative overflow-hidden group"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1629196914375-f7e48f477b6d?q=80&w=2606&auto=format&fit=crop")' }}
-        >
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        </div>
-      </div>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.coverContainer}>
+          <Image 
+            source={{ uri: "https://images.unsplash.com/photo-1629196914375-f7e48f477b6d?q=80&w=2606&auto=format&fit=crop" }}
+            style={styles.cover}
+          />
+        </View>
 
-      {/* Info */}
-      <div className="text-center px-6">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-serif mb-2">The Midnight Library</h1>
-        <p className="text-primary font-medium underline cursor-pointer">by Matt Haig</p>
-        
-        <div className="flex items-center justify-center gap-2 mt-4 text-slate-700 dark:text-slate-300">
-             <div className="flex text-amber-500">
-                <span className="material-symbols-filled text-lg">star</span>
-                <span className="material-symbols-filled text-lg">star</span>
-                <span className="material-symbols-filled text-lg">star</span>
-                <span className="material-symbols-filled text-lg">star</span>
-                <span className="material-symbols-outlined text-lg">star_half</span>
-             </div>
-             <span className="font-bold">4.5</span>
-             <span className="text-slate-500 text-sm">(1,280 reviews)</span>
-        </div>
-      </div>
+        <View style={styles.info}>
+          <Text style={[styles.title, { color: textColor }]}>The Midnight Library</Text>
+          <Text style={styles.author}>by Matt Haig</Text>
+          <View style={styles.rating}>
+            <View style={{ flexDirection: 'row' }}>
+               {[1,2,3,4].map(i => <Icon key={i} name="star" size={18} color={COLORS.amber500} />)}
+               <Icon name="star-half" size={18} color={COLORS.amber500} />
+            </View>
+            <Text style={[styles.ratingVal, { color: textColor }]}>4.5</Text>
+            <Text style={{ color: COLORS.slate500 }}>(1,280 reviews)</Text>
+          </View>
+        </View>
 
-      {/* Actions */}
-      <div className="grid grid-cols-2 gap-4 px-6 mt-6 mb-6">
-        <Button variant="primary" className="bg-primary/10 !text-primary hover:!bg-primary/20">Read Sample</Button>
-        <Button variant="primary">Buy for $14.99</Button>
-      </div>
+        <View style={styles.actions}>
+          <Button variant="ghost" style={{ backgroundColor: 'rgba(23, 84, 207, 0.1)', flex: 1 }}>Read Sample</Button>
+          <Button style={{ flex: 1 }}>Buy for $14.99</Button>
+        </View>
 
-      {/* Tabs */}
-      <div className="px-4 border-b border-slate-200 dark:border-slate-800 flex gap-6 mb-4">
-         <button className="py-3 px-2 border-b-2 border-primary text-primary font-semibold text-sm">About</button>
-         <button className="py-3 px-2 border-b-2 border-transparent text-slate-500 font-semibold text-sm">Details</button>
-         <button className="py-3 px-2 border-b-2 border-transparent text-slate-500 font-semibold text-sm">Reviews</button>
-      </div>
-
-      {/* Description */}
-      <div className="px-6">
-        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-base">
-            Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived. To see how things would be different if you had made other choices...
-            <button className="text-primary font-semibold ml-1 hover:underline">Read More</button>
-        </p>
-      </div>
-
-      {/* More by Author */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center px-6 mb-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">More by Matt Haig</h2>
-        </div>
-        <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-hide snap-x">
-             {[
-                'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=800&auto=format&fit=crop'
-             ].map((url, i) => (
-                <div key={i} className="flex-shrink-0 w-32 snap-start">
-                    <img src={url} className="w-full h-48 object-cover rounded-lg shadow-md hover:scale-105 transition-transform duration-300" alt="Book cover" />
-                    <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">The Humans</p>
-                </div>
-             ))}
-        </div>
-      </div>
-    </div>
+        <Text style={[styles.desc, { color: isDark ? COLORS.slate200 : COLORS.slate500 }]}>
+            Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.
+        </Text>
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 16, alignItems: 'center' },
+  headerTitle: { fontWeight: 'bold', fontSize: 18 },
+  content: { paddingBottom: 40 },
+  coverContainer: { alignItems: 'center', marginVertical: 20 },
+  cover: { width: 200, height: 300, borderRadius: 12 },
+  info: { alignItems: 'center', paddingHorizontal: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  author: { color: COLORS.primary, fontWeight: '600', marginBottom: 12 },
+  rating: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  ratingVal: { fontWeight: 'bold' },
+  actions: { flexDirection: 'row', gap: 12, padding: 20 },
+  desc: { paddingHorizontal: 20, lineHeight: 24, fontSize: 16 }
+});

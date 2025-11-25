@@ -1,50 +1,62 @@
+
 import React from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenName } from '../types';
+import { COLORS } from '../theme';
 
 interface NotificationScreenProps {
   onNavigate: (screen: ScreenName) => void;
+  isDark?: boolean;
 }
 
-export const NotificationScreen: React.FC<NotificationScreenProps> = ({ onNavigate }) => {
+export const NotificationScreen: React.FC<NotificationScreenProps> = ({ onNavigate, isDark = true }) => {
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.backgroundDark : COLORS.backgroundLight;
+
   const notifications = [
-    { icon: 'sell', color: 'text-green-500', title: 'New Sale!', message: 'You sold a copy of "The Silent Observer"', time: '2 mins ago' },
-    { icon: 'star', color: 'text-yellow-500', title: 'New Review', message: 'Sarah left a 5-star review on your book.', time: '1 hour ago' },
-    { icon: 'celebration', color: 'text-purple-500', title: 'Milestone Reached', message: 'You crossed 1,000 total reads!', time: '1 day ago' },
-    { icon: 'info', color: 'text-blue-500', title: 'System Update', message: 'Dashboard analytics have been updated.', time: '2 days ago' },
+    { icon: 'sell', color: COLORS.green500, title: 'New Sale!', message: 'You sold a copy of "The Silent Observer"', time: '2 mins ago' },
+    { icon: 'star', color: COLORS.amber500, title: 'New Review', message: 'Sarah left a 5-star review on your book.', time: '1 hour ago' },
   ];
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark animate-in slide-in-from-right duration-300">
-      <header className="sticky top-0 z-10 flex items-center gap-3 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-        <button 
-          onClick={() => onNavigate(ScreenName.DASHBOARD)} 
-          className="p-2 -ml-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-        >
-          <span className="material-symbols-outlined text-slate-900 dark:text-white">arrow_back</span>
-        </button>
-        <h1 className="text-lg font-bold text-slate-900 dark:text-white">Notifications</h1>
-        <div className="ml-auto">
-          <button className="text-xs font-bold text-primary hover:underline">Mark all read</button>
-        </div>
-      </header>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
+      <View style={[styles.header, { borderBottomColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+        <TouchableOpacity onPress={() => onNavigate(ScreenName.DASHBOARD)}>
+            <Icon name="arrow-back" size={24} color={textColor} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: textColor }]}>Notifications</Text>
+        <View style={{ width: 24 }} />
+      </View>
 
-      <div className="p-4 space-y-3">
-        {notifications.map((notif, i) => (
-          <div key={i} className="flex gap-4 p-4 bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className={`p-2 h-fit rounded-full bg-slate-50 dark:bg-slate-800 ${notif.color}`}>
-              <span className="material-symbols-outlined text-xl">{notif.icon}</span>
-            </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm">{notif.title}</h3>
-                <span className="text-xs text-slate-400 whitespace-nowrap">{notif.time}</span>
-              </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{notif.message}</p>
-            </div>
-            {i < 2 && <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>}
-          </div>
-        ))}
-      </div>
-    </div>
+      <FlatList 
+        data={notifications}
+        keyExtractor={(_, i) => i.toString()}
+        contentContainerStyle={{ padding: 16 }}
+        renderItem={({ item }) => (
+            <View style={[styles.item, { backgroundColor: isDark ? COLORS.surfaceDark : '#FFF', borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <View style={[styles.iconBox, { backgroundColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                    <Icon name={item.icon} size={24} color={item.color} />
+                </View>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={[styles.title, { color: textColor }]}>{item.title}</Text>
+                        <Text style={{ color: COLORS.slate500, fontSize: 12 }}>{item.time}</Text>
+                    </View>
+                    <Text style={{ color: COLORS.slate500, marginTop: 4 }}>{item.message}</Text>
+                </View>
+            </View>
+        )}
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 16, alignItems: 'center', borderBottomWidth: 1 },
+  headerTitle: { fontWeight: 'bold', fontSize: 18 },
+  item: { flexDirection: 'row', padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 12 },
+  iconBox: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  title: { fontWeight: 'bold', fontSize: 14 }
+});

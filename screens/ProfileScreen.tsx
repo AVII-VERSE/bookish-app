@@ -1,73 +1,91 @@
+
 import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenName } from '../types';
-import { Button } from '../components/Button';
+import { COLORS } from '../theme';
 
 interface ProfileScreenProps {
   onNavigate: (screen: ScreenName) => void;
+  isDark?: boolean;
 }
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate, isDark = true }) => {
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.backgroundDark : COLORS.backgroundLight;
+  const cardColor = isDark ? COLORS.surfaceDark : '#FFF';
+
   const menuItems = [
     { icon: 'person', label: 'Account Settings' },
     { icon: 'notifications', label: 'Notifications' },
     { icon: 'lock', label: 'Privacy & Security' },
     { icon: 'help', label: 'Help & Support' },
-    { icon: 'palette', label: 'Appearance' },
   ];
 
   return (
-    <div className="min-h-screen pb-24 max-w-lg mx-auto bg-background-light dark:bg-background-dark animate-in slide-in-from-right duration-300">
-      <div className="relative h-48 bg-gradient-to-br from-primary to-primary-dark">
-        <div className="absolute -bottom-12 left-6">
-          <div className="w-24 h-24 rounded-full border-4 border-white dark:border-background-dark overflow-hidden bg-white">
-            <img 
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop" 
-              alt="Profile" 
-              className="w-full h-full object-cover"
+    <ScrollView style={[styles.container, { backgroundColor: bgColor }]}>
+      <View style={styles.headerBanner}>
+        <View style={styles.avatarContainer}>
+            <Image 
+              source={{ uri: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop" }}
+              style={styles.avatar}
             />
-          </div>
-        </div>
-      </div>
+        </View>
+      </View>
       
-      <div className="pt-14 px-6 mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Alex Johnson</h1>
-        <p className="text-slate-500 dark:text-slate-400">alex.johnson@example.com</p>
-        <div className="flex gap-4 mt-4">
-          <div className="text-center p-3 bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 flex-1">
-            <span className="block text-xl font-bold text-slate-900 dark:text-white">12</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Books Read</span>
-          </div>
-          <div className="text-center p-3 bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 flex-1">
-            <span className="block text-xl font-bold text-slate-900 dark:text-white">4.8</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Avg Rating</span>
-          </div>
-        </div>
-      </div>
+      <View style={styles.profileInfo}>
+        <Text style={[styles.name, { color: textColor }]}>Alex Johnson</Text>
+        <Text style={styles.email}>alex@example.com</Text>
+        
+        <View style={styles.statsRow}>
+            <View style={[styles.statBox, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <Text style={[styles.statNum, { color: textColor }]}>12</Text>
+                <Text style={styles.statLabel}>Books</Text>
+            </View>
+            <View style={[styles.statBox, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <Text style={[styles.statNum, { color: textColor }]}>4.8</Text>
+                <Text style={styles.statLabel}>Rating</Text>
+            </View>
+        </View>
+      </View>
 
-      <div className="px-4 space-y-2">
+      <View style={styles.menu}>
         {menuItems.map((item, i) => (
-          <button 
-            key={i}
-            className="w-full flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                <span className="material-symbols-outlined">{item.icon}</span>
-              </div>
-              <span className="font-medium text-slate-900 dark:text-white">{item.label}</span>
-            </div>
-            <span className="material-symbols-outlined text-slate-400">chevron_right</span>
-          </button>
+            <TouchableOpacity key={i} style={[styles.menuItem, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name={item.icon} size={24} color={COLORS.slate500} style={{ marginRight: 16 }} />
+                    <Text style={{ color: textColor, fontSize: 16 }}>{item.label}</Text>
+                </View>
+                <Icon name="chevron-right" size={24} color={COLORS.slate500} />
+            </TouchableOpacity>
         ))}
         
-        <button 
-          onClick={() => onNavigate(ScreenName.AUTH)}
-          className="w-full flex items-center gap-3 p-4 mt-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors font-medium"
+        <TouchableOpacity 
+            onPress={() => onNavigate(ScreenName.AUTH)}
+            style={[styles.menuItem, { marginTop: 16, backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}
         >
-          <span className="material-symbols-outlined">logout</span>
-          Log Out
-        </button>
-      </div>
-    </div>
+             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icon name="logout" size={24} color={COLORS.red500} style={{ marginRight: 16 }} />
+                <Text style={{ color: COLORS.red500, fontSize: 16 }}>Log Out</Text>
+            </View>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  headerBanner: { height: 150, backgroundColor: COLORS.primary, marginBottom: 50, position: 'relative' },
+  avatarContainer: { position: 'absolute', bottom: -50, left: 24 },
+  avatar: { width: 100, height: 100, borderRadius: 50, borderWidth: 4, borderColor: COLORS.backgroundDark },
+  profileInfo: { paddingHorizontal: 24, marginBottom: 24 },
+  name: { fontSize: 24, fontWeight: 'bold' },
+  email: { color: COLORS.slate500, marginBottom: 16 },
+  statsRow: { flexDirection: 'row', gap: 16 },
+  statBox: { flex: 1, padding: 16, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
+  statNum: { fontSize: 20, fontWeight: 'bold' },
+  statLabel: { fontSize: 12, color: COLORS.slate500, textTransform: 'uppercase' },
+  menu: { paddingHorizontal: 24, paddingBottom: 100 },
+  menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 8 }
+});

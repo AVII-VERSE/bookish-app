@@ -1,5 +1,9 @@
+
 import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScreenName } from '../types';
+import { COLORS } from '../theme';
 
 interface SplashScreenProps {
   onNavigate: (screen: ScreenName) => void;
@@ -7,7 +11,6 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onNavigate }) => {
   useEffect(() => {
-    // Simulate loading time then navigate to Landing
     const timer = setTimeout(() => {
       onNavigate(ScreenName.LANDING);
     }, 2500);
@@ -16,19 +19,41 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onNavigate }) => {
   }, [onNavigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background-dark text-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary via-background-dark to-background-dark" />
-      
-      <div className="z-10 flex flex-col items-center animate-in zoom-in-95 duration-1000 fade-in">
-        <span className="material-symbols-outlined text-8xl text-primary mb-4 animate-bounce">auto_stories</span>
-        <h1 className="text-5xl font-bold tracking-tighter mb-2">Bookish</h1>
-        <p className="text-slate-400 font-serif italic tracking-widest text-lg">Your Next Chapter.</p>
-      </div>
-
-      <div className="absolute bottom-10 z-10">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    </div>
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Icon name="auto-stories" size={80} color={COLORS.primary} />
+        <Text style={styles.title}>Bookish</Text>
+        <Text style={styles.subtitle}>Your Next Chapter.</Text>
+      </View>
+      <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.backgroundDark,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginTop: 16,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: COLORS.slate400,
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
+  loader: {
+    position: 'absolute',
+    bottom: 60,
+  }
+});

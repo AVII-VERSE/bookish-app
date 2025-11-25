@@ -1,30 +1,76 @@
-import React from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+import React from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { COLORS } from '../theme';
+
+interface CustomInputProps extends React.ComponentProps<typeof TextInput> {
   label?: string;
   icon?: string;
-  onIconClick?: () => void;
+  onIconPress?: () => void;
+  isDark?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({ label, icon, onIconClick, className = '', ...props }) => {
+export const Input: React.FC<CustomInputProps> = ({ 
+  label, 
+  icon, 
+  onIconPress, 
+  isDark = true,
+  style,
+  ...props 
+}) => {
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.slate800 : COLORS.surfaceLight;
+  const borderColor = isDark ? COLORS.slate800 : COLORS.slate200;
+
   return (
-    <label className="flex flex-col gap-2 w-full">
-      {label && <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{label}</span>}
-      <div className="relative flex items-center">
-        <input
-          className={`form-input h-12 w-full rounded-lg border border-slate-300 bg-white p-3 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-primary ${className} ${icon ? 'pr-10' : ''}`}
+    <View style={styles.container}>
+      {label && (
+        <Text style={[styles.label, { color: isDark ? COLORS.slate200 : COLORS.slate800 }]}>
+          {label}
+        </Text>
+      )}
+      <View style={[styles.inputContainer, { backgroundColor: bgColor, borderColor: borderColor }]}>
+        <TextInput
+          style={[styles.input, { color: textColor }, style]}
+          placeholderTextColor={COLORS.slate400}
           {...props}
         />
         {icon && (
-          <button 
-            type="button"
-            onClick={onIconClick}
-            className="absolute right-3 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-xl">{icon}</span>
-          </button>
+          <TouchableOpacity onPress={onIconPress} style={styles.iconButton}>
+            <Icon name={icon} size={20} color={COLORS.slate400} />
+          </TouchableOpacity>
         )}
-      </div>
-    </label>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 50,
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 14,
+    minHeight: 40,
+    paddingVertical: 10,
+  },
+  iconButton: {
+    padding: 4,
+  }
+});

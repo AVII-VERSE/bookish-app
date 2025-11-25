@@ -1,149 +1,129 @@
+
 import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Dimensions, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { LineChart } from "react-native-chart-kit";
 import { ScreenName } from '../types';
-import { AreaChart, Area, Tooltip, ResponsiveContainer, Stop, LinearGradient } from 'recharts';
+import { COLORS } from '../theme';
 
 interface DashboardScreenProps {
   onNavigate: (screen: ScreenName) => void;
+  isDark?: boolean;
 }
 
-const data = [
-  { name: 'Week 1', value: 2000 },
-  { name: 'Week 1.5', value: 3500 },
-  { name: 'Week 2', value: 2100 },
-  { name: 'Week 2.5', value: 4800 },
-  { name: 'Week 3', value: 2400 },
-  { name: 'Week 3.5', value: 1800 },
-  { name: 'Week 4', value: 4120 },
-];
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate, isDark = true }) => {
+  const textColor = isDark ? COLORS.textDark : COLORS.textLight;
+  const bgColor = isDark ? COLORS.backgroundDark : COLORS.backgroundLight;
+  const cardColor = isDark ? COLORS.surfaceDark : '#FFF';
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
   return (
-    <div className="min-h-screen pb-24 animate-in fade-in duration-500 max-w-lg mx-auto">
-      {/* Header */}
-      <div className="p-4 bg-background-light dark:bg-background-dark sticky top-0 z-10">
-        <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-3">
-                <div 
-                    onClick={() => onNavigate(ScreenName.PROFILE)}
-                    className="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-700 cursor-pointer"
-                    style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop")' }}
+    <ScrollView style={[styles.container, { backgroundColor: bgColor }]}>
+      <View style={[styles.header, { backgroundColor: bgColor }]}>
+        <View style={styles.headerTop}>
+            <TouchableOpacity onPress={() => onNavigate(ScreenName.PROFILE)}>
+                <Image 
+                    source={{ uri: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop" }}
+                    style={styles.avatar}
                 />
-            </div>
-            <button 
-              onClick={() => onNavigate(ScreenName.NOTIFICATIONS)}
-              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors relative"
-            >
-                <span className="material-symbols-outlined text-slate-800 dark:text-white">notifications</span>
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-background-light dark:border-background-dark"></span>
-            </button>
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Welcome, Alex</h1>
-      </div>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onNavigate(ScreenName.NOTIFICATIONS)} style={styles.notifBtn}>
+                <Icon name="notifications" size={24} color={textColor} />
+                <View style={styles.badge} />
+            </TouchableOpacity>
+        </View>
+        <Text style={[styles.welcome, { color: textColor }]}>Welcome, Alex</Text>
+      </View>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 px-4 mb-6">
+      <View style={styles.statsGrid}>
         {[
             { label: 'Total Revenue', value: '$12,482', change: '+5.2%', positive: true },
             { label: 'Units Sold', value: '856', change: '+12.1%', positive: true },
             { label: 'Avg. Rating', value: '4.8', change: '-0.1', positive: false },
             { label: 'New Reviews', value: '23', change: '+8', positive: true },
         ].map((stat, i) => (
-            <div key={i} className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-4 rounded-xl flex flex-col gap-1">
-                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">{stat.label}</span>
-                <span className="text-xl font-bold text-slate-900 dark:text-white">{stat.value}</span>
-                <span className={`text-sm font-medium ${stat.positive ? 'text-green-500' : 'text-amber-500'}`}>{stat.change}</span>
-            </div>
+            <View key={i} style={[styles.statCard, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <Text style={styles.statLabel}>{stat.label}</Text>
+                <Text style={[styles.statValue, { color: textColor }]}>{stat.value}</Text>
+                <Text style={{ color: stat.positive ? COLORS.green500 : COLORS.amber500, fontSize: 12 }}>{stat.change}</Text>
+            </View>
         ))}
-      </div>
+      </View>
 
-      {/* Chart Section */}
-      <div className="px-4 mb-8">
-        <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium text-slate-900 dark:text-white">Sales Performance</h3>
-                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5">
-                    {['7D', '30D', '90D'].map(period => (
-                        <button key={period} className={`px-2 py-1 text-xs rounded-md font-medium ${period === '30D' ? 'bg-white dark:bg-slate-700 text-primary dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}>
-                            {period}
-                        </button>
-                    ))}
-                </div>
-            </div>
-            <div className="mb-4">
-                <span className="text-3xl font-bold text-slate-900 dark:text-white block">$4,120</span>
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-slate-500 dark:text-slate-400">Last 30 Days</span>
-                    <span className="text-sm font-medium text-green-500">+12.1%</span>
-                </div>
-            </div>
+      <View style={styles.chartContainer}>
+         <View style={[styles.chartCard, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+            <Text style={[styles.chartTitle, { color: textColor }]}>Sales Performance</Text>
+            <Text style={[styles.chartTotal, { color: textColor }]}>$4,120</Text>
             
-            <div className="h-40 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
-                        <defs>
-                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#1754cf" stopOpacity={0.3}/>
-                                <stop offset="95%" stopColor="#1754cf" stopOpacity={0}/>
-                            </linearGradient>
-                        </defs>
-                        <Tooltip 
-                            contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
-                            itemStyle={{ color: '#fff' }}
-                            labelStyle={{ display: 'none' }}
-                        />
-                        <Area 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke="#1754cf" 
-                            strokeWidth={3}
-                            fillOpacity={1} 
-                            fill="url(#colorValue)" 
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </div>
-            <div className="flex justify-between text-xs text-slate-400 mt-2 px-2">
-                <span>Week 1</span>
-                <span>Week 2</span>
-                <span>Week 3</span>
-                <span>Week 4</span>
-            </div>
-        </div>
-      </div>
+            <LineChart
+                data={{
+                  labels: ["W1", "W2", "W3", "W4"],
+                  datasets: [{ data: [2000, 2100, 2400, 4120] }]
+                }}
+                width={Dimensions.get("window").width - 60} 
+                height={220}
+                yAxisLabel="$"
+                chartConfig={{
+                  backgroundColor: cardColor,
+                  backgroundGradientFrom: cardColor,
+                  backgroundGradientTo: cardColor,
+                  decimalPlaces: 0, 
+                  color: (opacity = 1) => `rgba(23, 84, 207, ${opacity})`,
+                  labelColor: (opacity = 1) => isDark ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
+                  style: { borderRadius: 16 },
+                  propsForDots: { r: "6", strokeWidth: "2", stroke: COLORS.primary }
+                }}
+                bezier
+                style={{ marginVertical: 8, borderRadius: 16 }}
+              />
+         </View>
+      </View>
 
-      {/* My Books */}
-      <div className="px-4">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">My Books</h2>
-        <div className="flex flex-col gap-4">
-            {[
-                { title: 'The Silent Observer', rating: '4.9', count: '2,184', img: 'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=3786&auto=format&fit=crop' },
-                { title: 'Echoes of the Void', rating: '4.7', count: '1,530', img: 'https://images.unsplash.com/photo-1620052581237-5d36667be337?q=80&w=2574&auto=format&fit=crop' }
-            ].map((book, i) => (
-                <div key={i} className="flex gap-4 p-4 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                    <img src={book.img} alt={book.title} className="w-16 h-24 object-cover rounded-md shadow-sm" />
-                    <div className="flex-1">
-                        <h3 className="font-semibold text-slate-900 dark:text-white">{book.title}</h3>
-                        <div className="flex items-center gap-1 mt-1">
-                            <span className="material-symbols-filled text-yellow-500 text-sm">star</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400">{book.rating} ({book.count} ratings)</span>
-                        </div>
-                    </div>
-                    <button className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
-                        <span className="material-symbols-outlined">more_vert</span>
-                    </button>
-                </div>
-            ))}
-        </div>
-      </div>
-      
-      {/* FAB */}
-      <button 
-        onClick={() => onNavigate(ScreenName.SUBMIT_BOOK)}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-primary hover:bg-primary/90 rounded-full shadow-lg flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 z-40"
-      >
-        <span className="material-symbols-outlined text-3xl">add</span>
-      </button>
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>My Books</Text>
+        {[
+            { title: 'The Silent Observer', rating: '4.9', count: '2,184', img: 'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=3786&auto=format&fit=crop' },
+            { title: 'Echoes of the Void', rating: '4.7', count: '1,530', img: 'https://images.unsplash.com/photo-1620052581237-5d36667be337?q=80&w=2574&auto=format&fit=crop' }
+        ].map((book, i) => (
+            <TouchableOpacity key={i} style={[styles.bookCard, { backgroundColor: cardColor, borderColor: isDark ? COLORS.slate800 : COLORS.slate200 }]}>
+                <Image source={{ uri: book.img }} style={styles.bookCover} />
+                <View style={styles.bookInfo}>
+                    <Text style={[styles.bookTitle, { color: textColor }]}>{book.title}</Text>
+                    <View style={styles.ratingRow}>
+                        <Icon name="star" size={16} color={COLORS.amber500} />
+                        <Text style={styles.ratingText}>{book.rating} ({book.count})</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        ))}
+      </View>
 
-    </div>
+      <View style={{ height: 100 }} /> 
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: { padding: 20 },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  avatar: { width: 40, height: 40, borderRadius: 20 },
+  notifBtn: { padding: 8 },
+  badge: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.red500, position: 'absolute', top: 8, right: 8 },
+  welcome: { fontSize: 24, fontWeight: 'bold', marginTop: 16 },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12 },
+  statCard: { width: '45%', margin: '2.5%', padding: 16, borderRadius: 12, borderWidth: 1 },
+  statLabel: { color: COLORS.slate500, fontSize: 12, marginBottom: 4 },
+  statValue: { fontSize: 18, fontWeight: 'bold' },
+  chartContainer: { paddingHorizontal: 20, marginBottom: 20 },
+  chartCard: { padding: 16, borderRadius: 12, borderWidth: 1 },
+  chartTitle: { fontSize: 16, fontWeight: '600' },
+  chartTotal: { fontSize: 24, fontWeight: 'bold', marginVertical: 8 },
+  section: { paddingHorizontal: 20 },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  bookCard: { flexDirection: 'row', padding: 12, borderRadius: 12, marginBottom: 12, borderWidth: 1, alignItems: 'center' },
+  bookCover: { width: 50, height: 75, borderRadius: 6 },
+  bookInfo: { marginLeft: 12, flex: 1 },
+  bookTitle: { fontWeight: '600', fontSize: 16 },
+  ratingRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+  ratingText: { color: COLORS.slate500, fontSize: 12, marginLeft: 4 },
+});
