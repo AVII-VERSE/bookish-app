@@ -14,10 +14,11 @@ import { SubmitBookScreen } from './screens/SubmitBookScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { NotificationScreen } from './screens/NotificationScreen';
+import { MedicalAnalysisScreen } from './screens/MedicalAnalysisScreen';
 import { BottomNav } from './components/BottomNav';
 
 const App = () => {
-  const [currentScreen, setCurrentScreen] = useState<ScreenName>(ScreenName.SPLASH);
+  const [currentScreen, setCurrentScreen] = useState<ScreenName>(ScreenName.MEDICAL_ANALYSIS);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark'; // Or force true as per web design defaults
 
@@ -43,7 +44,8 @@ const App = () => {
       case ScreenName.LIBRARY: return <LibraryScreen {...props} />;
       case ScreenName.PROFILE: return <ProfileScreen {...props} />;
       case ScreenName.NOTIFICATIONS: return <NotificationScreen {...props} />;
-      default: return <LandingScreen {...props} />;
+      case ScreenName.MEDICAL_ANALYSIS: return <MedicalAnalysisScreen {...props} />;
+      default: return <MedicalAnalysisScreen {...props} />;
     }
   };
 

@@ -16,4 +16,6 @@ export const COLORS = {
   green500: "#22c55e",
   amber500: "#f59e0b",
   red500: "#ef4444",
+  medicalBlue: "#0ea5e9",
+  medicalGreen: "#10b981",
 };

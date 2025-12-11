@@ -10,6 +10,7 @@ export enum ScreenName {
   LIBRARY = 'LIBRARY',
   PROFILE = 'PROFILE',
   NOTIFICATIONS = 'NOTIFICATIONS',
+  MEDICAL_ANALYSIS = 'MEDICAL_ANALYSIS',
 }
 
 export interface Book {

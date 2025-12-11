@@ -12,11 +12,23 @@ export default defineConfig(({ mode }) => {
       plugins: [react()],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        'process.env.API_BASE_URL': JSON.stringify(env.API_BASE_URL || 'http://localhost:3000')
       },
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+          'react-native': 'react-native-web',
+        }
+      },
+      optimizeDeps: {
+        esbuildOptions: {
+          resolveExtensions: ['.web.js', '.js', '.ts', '.tsx', '.jsx'],
+        }
+      },
+      build: {
+        commonjsOptions: {
+          transformMixedEsModules: true,
         }
       }
     };
