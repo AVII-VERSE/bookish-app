@@ -1,0 +1,16 @@
+This is a sample text document for testing.
+It contains multiple lines with    extra    whitespace    that should be normalized.
+
+This is a new paragraph.
+
+Medication: Take 500mg of Aspirin twice daily with food.
+Dosage: 1 tablet every 8 hours as needed for pain.
+Prescription: Amoxicillin 250mg capsules.
+
+This document also contains a simple list:
+- First item
+- Second item  
+- Third item
+
+Page 1 of 2
+Continued on next page
